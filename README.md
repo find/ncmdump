@@ -1,6 +1,23 @@
 Netease Cloud Music Copyright Protection File Dump
 ===========
 
+## 修改
+
+* 加了 xmake 编译脚本
+* 引用了 taglib submodule
+* 修了几个编译问题
+
+## 生成
+
+```
+> git submodule update --init
+> xmake
+```
+
+以下是原 README
+
+-------------------------
+
 ## 重要通知!!!
 尽量不要升级网易云，新版本貌似不会写入封面数据和音乐信息至ncm文件了。
 

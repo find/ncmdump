@@ -3,11 +3,11 @@
 #include "base64.h"
 #include "cJSON.h"
 
-#include <taglib/mpegfile.h>
-#include <taglib/flacfile.h>
-#include <taglib/attachedpictureframe.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/tag.h>
+#include <mpegfile.h>
+#include <flacfile.h>
+#include <attachedpictureframe.h>
+#include <id3v2tag.h>
+#include <tag.h>
 
 #include <stdexcept>
 #include <string>
@@ -248,7 +248,7 @@ void NeteaseCrypt::Dump() {
 	n = 0x8000;
 	i = 0;
 
-	unsigned char buffer[n];
+	unsigned char* buffer=new unsigned char[n];
 
 	std::ofstream output;
 
@@ -277,6 +277,7 @@ void NeteaseCrypt::Dump() {
 		output.write((char*)buffer, n);
 	}
 
+    delete[] buffer;
 	output.flush();
 	output.close();
 }
@@ -313,7 +314,7 @@ NeteaseCrypt::NeteaseCrypt(std::string const& path) {
 		throw std::invalid_argument("broken ncm file");
 	}
 
-	char keydata[n];
+	char *keydata=new char[n];
 	read(keydata, n);
 
 	for (i = 0; i < n; i++) {
@@ -321,6 +322,8 @@ NeteaseCrypt::NeteaseCrypt(std::string const& path) {
 	}
 
 	std::string rawKeyData(keydata, n);
+    delete[] keydata;
+
 	std::string mKeyData;
 
 	aesEcbDecrypt(sCoreKey, rawKeyData, mKeyData);
@@ -334,7 +337,7 @@ NeteaseCrypt::NeteaseCrypt(std::string const& path) {
 
 		mMetaData = NULL;
 	} else {
-		char modifyData[n];
+		char *modifyData=new char[n];
 		read(modifyData, n);
 
 		for (i = 0; i < n; i++) {
@@ -358,6 +361,7 @@ NeteaseCrypt::NeteaseCrypt(std::string const& path) {
 		// std::cout << modifyDecryptData << std::endl;
 
 		mMetaData = new NeteaseMusicMetadata(cJSON_Parse(modifyDecryptData.c_str()));
+        delete[] modifyData;
 	}
 
 	// skip crc32 & unuse charset
